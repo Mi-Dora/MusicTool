@@ -17,7 +17,7 @@ Description:
 
 import os
 
-path = 'D:/Desktop/Walkman'
+path = 'D:/Desktop/Temp/Walkman'
 
 if os.path.exists('lyrics_log.txt'):
     os.remove('lyrics_log.txt')

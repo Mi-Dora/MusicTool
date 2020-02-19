@@ -19,7 +19,7 @@ from mutagen import flac, mp3, dsf, wavpack, File, id3, MutagenError
 import os
 import shutil
 
-path = 'D:/Desktop/Walkman'
+path = 'D:/Desktop/Temp/Walkman'
 sub_cover_path = 'D:/Pictures/Cover'
 audio_suffix = ('.flac', '.mp3', '.wav', '.dff', '.ape', '.dsf')
 
@@ -131,6 +131,8 @@ def export_mp3(root, audio_f):
     try:
         artwork = metadata.tags['APIC:'].data
         # title = metadata.tags["TIT2"].text[0]
+        if os.path.exists(os.path.join(root, audio_f[:-4] + '.jpg')):
+            return
         with open(os.path.join(root, audio_f[:-4]) + '.jpg', 'wb') as img:
             img.write(artwork)
             print('Export ' + os.path.join(root, audio_f[:-4]) + '.jpg')
@@ -142,6 +144,8 @@ def export_flac(root, audio_f):
     metadata = File(os.path.join(root, audio_f))
     try:
         data = metadata.pictures[0].data
+        if os.path.exists(os.path.join(root, audio_f[:-5] + '.jpg')):
+            return
         with open(os.path.join(root, audio_f[:-5] + '.jpg'), 'wb') as jpg_f:
             jpg_f.write(data)
             print('Export ' + os.path.join(root, audio_f[:-5]) + '.jpg')
@@ -192,15 +196,26 @@ def insert_mp3(abs_audio_f):
         if not os.path.exists(cover):
             # print('Cover for [' + abs_audio_f + '] not found.')
             return
-    metadata = File(abs_audio_f)
-    with open(cover, 'rb') as img_f:
-        metadata.tags.add(id3.APIC(encoding=3,  # 3 is for utf-8
-                                   mime=mime,  # image/jpeg or image/png
-                                   type=id3.PictureType.COVER_FRONT,  # 3 is for the cover image
-                                   data=img_f.read()
-                                   )
-                          )
-        metadata.save()
+    audio = id3.ID3(abs_audio_f)
+
+    with open(cover, 'rb') as albumart:
+        audio['APIC'] = id3.APIC(
+            encoding=3,
+            mime='image/jpeg',
+            type=3, desc=u'Cover',
+            data=albumart.read()
+        )
+
+    audio.save()
+    # metadata = File(abs_audio_f)
+    # with open(cover, 'rb') as img_f:
+    #     metadata.tags.add(id3.APIC(encoding=3,  # 3 is for utf-8
+    #                                mime=mime,  # image/jpeg or image/png
+    #                                type=id3.PictureType.COVER_FRONT,  # 3 is for the cover image
+    #                                data=img_f.read()
+    #                                )
+    #                       )
+    #     metadata.save()
 
 
 def insert_cover(abs_audio_fs, rm_cvr_f=False, overlap=False):
@@ -209,8 +224,8 @@ def insert_cover(abs_audio_fs, rm_cvr_f=False, overlap=False):
             continue
         if abs_audio_f.endswith('.flac'):
             insert_flac(abs_audio_f)
-        elif abs_audio_f.endswith('.mp3'):
-            insert_mp3(abs_audio_f)
+        # elif abs_audio_f.endswith('.mp3'):
+        #     insert_mp3(abs_audio_f)
         if rm_cvr_f:
             os.remove(cut_suffix(abs_audio_f) + '.jpg')
         # else:
