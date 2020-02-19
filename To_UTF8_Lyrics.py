@@ -1,8 +1,26 @@
-#-*- coding:utf-8 -*- #
+# -*- coding:utf-8 -*- #
+
+'''
+    Created on Sunday Feb 18 22:46 2020
+    Author           : Mi-Dora
+    Email            : 1239988498@qq.com
+    Last edit date   :
+'''
+
+'''
+*******************************************************************************
+Description:
+    This file is used to transcode .lrc file from "GB2312" to "UTF-8".
+    In case messy code shown on some players.
+*******************************************************************************
+'''
 
 import os
 
-path = './'
+path = 'D:/Desktop/Walkman'
+
+if os.path.exists('lyrics_log.txt'):
+    os.remove('lyrics_log.txt')
 for root, dirs, files in os.walk(path):
     lyric_fs = [file for file in files if file.endswith('.lrc')]
     for lyric_f in lyric_fs:
@@ -15,5 +33,10 @@ for root, dirs, files in os.walk(path):
             utf_lyrics = gb_lyrics.encode('utf-8')
         with open(os.path.join(root, lyric_f), 'wb') as f:
             f.write(utf_lyrics)
-            print('Recode [' + lyric_f + '] to UTF-8')
-
+        print('Recode [' + lyric_f + '] to UTF-8')
+        if os.path.exists('lyrics_log.txt'):
+            with open('lyrics_log.txt', 'a') as log:
+                log.write('Recode [' + lyric_f + '] to UTF-8\n')
+        else:
+            with open('lyrics_log.txt', 'w') as log:
+                log.write('Recode [' + lyric_f + '] to UTF-8\n')
