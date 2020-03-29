@@ -19,7 +19,7 @@ from mutagen import flac, mp3, dsf, wavpack, File, id3, MutagenError
 import os
 import shutil
 
-path = 'D:/Desktop/Temp/Walkman'
+path = 'F:/MusicDownload/Walkman'
 sub_cover_path = 'D:/Pictures/Cover'
 audio_suffix = ('.flac', '.mp3', '.wav', '.dff', '.ape', '.dsf')
 
